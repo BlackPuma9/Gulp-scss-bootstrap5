@@ -1,2 +1,6 @@
 // Base styles for all pages
-@import './common/index';
+$primary-color: red;
+
+body {
+  color: $primary-color;
+}
