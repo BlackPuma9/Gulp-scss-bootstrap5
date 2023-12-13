@@ -1,21 +1,19 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
-const fileinclude = require('gulp-file-include');
 const clean = require('gulp-clean');
 const browserSync = require('browser-sync').create();
 const fs = require('fs');
 const pug = require('gulp-pug');
 
-
 const browserSyncJob = () => {
-    browserSync.init({
-        server: './dist/'
+    const files = [
+        './**/*'
+    ];
+    browserSync.init(files,{
+        server: './dist'
     });
-};
-
-const reload = (done) => {
-    browserSync.reload();
-    done();
+    gulp.watch('./src/pages/*.pug', htmlCompile).on('change', browserSync.reload);
+    gulp.watch('./src/scss/*.scss',scssCompile).on('change', browserSync.reload);
 };
 
 const cleanFiles = function (done) {
@@ -37,15 +35,5 @@ const scssCompile = () => {
         .pipe(gulp.dest('./dist/css/'));
 };
 
-
-const watchers = () => {
-    gulp.watch('./src/pages/*.pug', gulp.series(htmlCompile,reload));
-    gulp.watch('./src/scss/*.scss', gulp.series(scssCompile, reload));
-
-};
-
-
 exports.default = gulp.series(cleanFiles,
-    gulp.parallel(htmlCompile, scssCompile),
-    gulp.parallel(browserSyncJob, watchers)
-);
+    gulp.parallel(htmlCompile, scssCompile), browserSyncJob);
